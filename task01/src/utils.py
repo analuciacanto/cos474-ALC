@@ -56,11 +56,6 @@ def matrizTransposta(A):
             L[j][i] = A[i][j] # preenche a matriz transposta
     return L
 
-def vetor_de_um(n):
-    meu_vetor = []
-    for i in range(n):
-        meu_vetor.append(1)
-    return meu_vetor
 
 def condicao_convergencia(A): # para convergir, a matriz A deve ser diagonal dominante
     converge = True

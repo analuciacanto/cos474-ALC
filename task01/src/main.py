@@ -183,8 +183,8 @@ def jacobi(A, b, tolerancia):
 
 def gauss_seidel(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de aproximação, por exemplo 10**-3
     n = len(A) # tamanho da matriz
-    x = vetor_de_um(n) # vetor solução, por enquanto definido como um vetor de um
-    x_aux = vetor_de_um(n) # vetor auxiliar, para alocar as respostas das operações
+    x = len(A) * [1.0] # vetor solução, por enquanto definido como um vetor de um
+    x_aux = len(A) * [1.0] # vetor auxiliar, para alocar as respostas das operações
     iteracao = 0 # contador de iterações
     res = 1 # resíduo inicial
     if condicao_convergencia:
@@ -197,7 +197,8 @@ def gauss_seidel(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de
                 x_aux[i] = (b[i] - soma) / A[i][i]
             iteracao += 1
             res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração
-            x = x_aux # atualiza o vetor x da solução mais aproximada
+            print(res)
+            x = np.copy(x_aux) # atualiza o vetor x da solução mais aproximada
         print(x, iteracao, res)
         return (x, iteracao)
     else:
@@ -205,4 +206,4 @@ def gauss_seidel(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de
 
 
 if __name__ == '__main__':
-    main(3)
+    main(4)
