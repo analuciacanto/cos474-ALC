@@ -1,4 +1,5 @@
 import numpy as np
+from utils import *
 
 def getMatrizA():
     A = []
@@ -18,7 +19,6 @@ def getMatrizB():
     return B
 
 
-
 def main(ICOD): 
 
     Amatrix = getMatrizA()
@@ -32,55 +32,32 @@ def main(ICOD):
   
     B = list(np.float_(Bmatrix))    
 
+    A = [[3, -1, -1], [-1, +3, -1 ], [-1, -1, +3]]
+    B = [1, 2, 1]
 
-    A = [[1,2,2],[4,4,2],[4,6,4]]
-    B = [3,6,10]
-    
     if (ICOD == 1):
         decomposicaoLU(A, B, len(A))
-       
-
+    elif (ICOD == 2):
+        cholesky(A, B, len(A))
+    elif (ICOD == 3):
+        jacobi(A, B, 10**-3)
+    elif (ICOD == 4):
+        gauss_seidel(A, B, 10**-3)      
     else:
         print("Insira um código válido")
 
 
-#Funções auxiliares
 
-def matrizQuadrada(A): # verifica se uma matriz é quadrada
-    n = len(A)  # numero de linhas 
-    m = len(A[0])  # numero de colunas
-    if n != m:
-        return False
-    return True
-
-
-def matrizPositiva(A): # verifica se os números de uma matriz quadrada são positivos
-  n = len(A) # tamanho da matriz quadrada
-  for i in np.arange(n): # percorre linhas da matriz quadrada
-    for j in np.arange(n): # percorre colunas da matriz quadrada
-        if A[i][j] <= 0:
-          return False
-  return True
-
-
-def determinanteLU(A): # multiplicar diagonal principal
-    n = np.shape(A)[0]  # numero de linhas
-    det = 1
-    for i in np.arange(n): # percorre o tamanho da matriz
-        det *= A[i][i] # multiplica diagonal principal
-    return det
-
-
-
-def identidade(N):
-    'Cria uma matriz identidade'
-    identidade = []
-    for i in range(0,N):
-        linha = [0] * N
-        linha[i] = 1
-        identidade.append(linha)
-    return identidade
-
+def residuo_vetor(A, x, x_aux): # calcula o resíduo para o método iterativo de jacobi e gauss_seidel usando a norma euclidiana
+  n = len(A) # tamanho da matriz
+  num, den = 0.0, 0.0 # inicializa numerador e denominador com zero 
+  for i in range(n): # percorre os vetores somando cada elemento elevado ao quadrado 
+      num += (x_aux[i] - x[i])**2 # faz a diferença entre x_aux menos x ao quadrado
+      den += (x_aux[i])**2 # eleva o valor de x_aux ao quadrado
+  num = num**0.5 # tira a raiz da soma para o numerador 
+  den = den**0.5 # tira a raiz da soma para o denominador 
+  res = num/den # faz a divisão final do resíduo
+  return res
 
 def substituicoes_sucessivas(A, B, N):    
 
@@ -113,8 +90,6 @@ def substituicoes_retroativas(A, Y, N):
 
     return x
 
-
-
 def decomposicaoLU(A, B, N):
     quadrada = matrizQuadrada(A)
 
@@ -134,20 +109,97 @@ def decomposicaoLU(A, B, N):
                     A[i][j] = m* A[k][j] + A[i][j]                
                 A[i][k] = 0
 
-        print(L)
-        print(A)
-        
+     
         # Calculando Ly = B
         y = substituicoes_sucessivas(L, B, N)
-        print(y)
 
         #Calculando Ux = B
         x = substituicoes_retroativas(A, y, N)
-        print(x)
+        print(x) 
         return x
    
     else: 
         print("Insira uma matriz quadrada")   
 
 
-main(1)
+def cholesky(A, B, N):
+
+    n = len(A)
+    L = np.zeros((n, n))
+    # Conferindo se é simétrica e positiva
+    quadrada = matrizQuadrada(A)
+    positiva = matrizPositiva(A)
+
+    if (quadrada & positiva) == False:
+        print("Insira uma matriz válida")
+        return (L, False) # retorna a matriz vazia e false indicando que a operação não foi realizada
+
+    for i in range(n):
+      for j in range(i+1):
+        if (i == j):
+          soma = 0
+          for k in range(i):
+            soma += L[i][k]**2
+          L[i][i] = (A[i][i] - soma) ** 0.5
+        else:
+          soma = 0
+          for k in range(i):
+            soma += L[i][k] * L[j][k]
+          L[i][j] = ((A[i][j] - soma) / L[j][j]) 
+
+    Lt = matrizTransposta(L)
+     # Calculando Ly = B
+    y = substituicoes_sucessivas(L, B, N)
+
+    #Calculando Ux = B
+    x = substituicoes_retroativas(A, y, N)
+    print(x) 
+    return (x, True) # retorna a matriz L triangular inferior e True indicando que a operação foi realizada
+
+def jacobi(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de aproximação, por exemplo 10**-3 
+  n = np.shape(A)[0] # tamanho da matriz
+  x = vetor_de_um(n) # vetor solução, por enquanto definido como um vetor de um 
+  x_aux = len(A) * [1.0] # vetor auxiliar, para alocar as respostas das operações
+  iteracao = 0 # contador de iterações
+  res = 1.0 # resíduo inicial
+  if condicao_convergencia(A):
+    while (res > tolerancia):
+        for i in range(n): # percorre as linhas da matriz
+            soma = 0.0
+            for j in range(n): # percorre as colunas da matriz
+                if (i != j): #verifica se não é a diagonal principal 
+                    soma += A[i][j]*x[j] # usa o vetor que não sofre alteração para completar a soma
+            b[i] = b[i]/A[i][i]
+            x_aux[i] = (b[i] - soma) / A[i][i]
+        iteracao += 1
+        res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração 
+        print(res)
+        x = x_aux # atualiza o vetor x da solução mais aproximada
+    print(x, iteracao)
+    return (x, iteracao)
+  else:
+    print("Não converge.")
+
+def gauss_seidel(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de aproximação, por exemplo 10**-3
+  n = len(A) # tamanho da matriz
+  x = vetor_de_um(n) # vetor solução, por enquanto definido como um vetor de um 
+  x_aux = vetor_de_um(n) # vetor auxiliar, para alocar as respostas das operações
+  iteracao = 0 # contador de iterações
+  res = 1 # resíduo inicial
+  if condicao_convergencia:
+    while (res > tolerancia):
+        for i in range(n): # percorre as linhas da matriz
+            soma = 0
+            for j in range(n): # percorre as colunas da matriz
+               if (i != j): #verifica se não é a diagonal principal
+                    soma += A[i][j]*x_aux[j] # usa sempre o vetor com os valores mais atualizados para a soma 
+            x_aux[i] = (b[i] - soma) / A[i][i]
+        iteracao += 1
+        res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração 
+        x = x_aux # atualiza o vetor x da solução mais aproximada
+    print(x, iteracao, res)
+    return (x, iteracao)
+  else:
+    print("Não converge.")
+
+main(3)
