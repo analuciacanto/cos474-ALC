@@ -4,7 +4,7 @@ from utils import *
 def getMatrizA():
     A = []
 
-    with open("task01/src/mat_A.dat") as file:
+    with open("mat_A.dat") as file:
         for line in file.readlines():
             data = line.split()
             A.append(data)
@@ -13,7 +13,7 @@ def getMatrizA():
 def getMatrizB():
     B = []
 
-    with open("task01/src/vet_B.dat") as file:        
+    with open("vet_B.dat") as file:
         for line in file:
             B.append(line.rstrip('\n'));
     return B
@@ -156,50 +156,53 @@ def cholesky(A, B, N):
     print(x) 
     return (x, True) # retorna a matriz L triangular inferior e True indicando que a operação foi realizada
 
-def jacobi(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de aproximação, por exemplo 10**-3 
-  n = np.shape(A)[0] # tamanho da matriz
-  x = vetor_de_um(n) # vetor solução, por enquanto definido como um vetor de um 
-  x_aux = len(A) * [1.0] # vetor auxiliar, para alocar as respostas das operações
-  iteracao = 0 # contador de iterações
-  res = 1.0 # resíduo inicial
-  if condicao_convergencia(A):
-    while (res > tolerancia):
-        for i in range(n): # percorre as linhas da matriz
-            soma = 0.0
-            for j in range(n): # percorre as colunas da matriz
-                if (i != j): #verifica se não é a diagonal principal 
-                    soma += A[i][j]*x[j] # usa o vetor que não sofre alteração para completar a soma
-            b[i] = b[i]/A[i][i]
-            x_aux[i] = (b[i] - soma) / A[i][i]
-        iteracao += 1
-        res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração 
-        print(res)
-        x = x_aux # atualiza o vetor x da solução mais aproximada
-    print(x, iteracao)
-    return (x, iteracao)
-  else:
-    print("Não converge.")
+
+def jacobi(A, b, tolerancia):
+    n = np.shape(A)[0] # tamanho da matriz
+    x = len(A) * [1.0] # vetor solução, por enquanto definido como um vetor de um
+    x_aux = len(A) * [1.0] # vetor auxiliar, para alocar as respostas das operações
+    iteracao = 0 # contador de iterações
+    res = 1.0 # resíduo inicial
+    if condicao_convergencia(A):
+        while res > tolerancia:
+            for i in range(n): # percorre as linhas da matriz
+                soma = 0.0
+                for j in range(n): # percorre as colunas da matriz
+                    if i != j: #verifica se não é a diagonal principal
+                        soma += A[i][j]*x[j] # usa o vetor que não sofre alteração para completar a soma
+                x_aux[i] = (b[i] - soma) / A[i][i]
+            iteracao += 1
+            res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração
+            print(res)
+            x = np.copy(x_aux) # atualiza o vetor x da solução mais aproximada
+        print(x, iteracao)
+        return x, iteracao
+    else:
+        print("Não converge.")
+
 
 def gauss_seidel(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de aproximação, por exemplo 10**-3
-  n = len(A) # tamanho da matriz
-  x = vetor_de_um(n) # vetor solução, por enquanto definido como um vetor de um 
-  x_aux = vetor_de_um(n) # vetor auxiliar, para alocar as respostas das operações
-  iteracao = 0 # contador de iterações
-  res = 1 # resíduo inicial
-  if condicao_convergencia:
-    while (res > tolerancia):
-        for i in range(n): # percorre as linhas da matriz
-            soma = 0
-            for j in range(n): # percorre as colunas da matriz
-               if (i != j): #verifica se não é a diagonal principal
-                    soma += A[i][j]*x_aux[j] # usa sempre o vetor com os valores mais atualizados para a soma 
-            x_aux[i] = (b[i] - soma) / A[i][i]
-        iteracao += 1
-        res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração 
-        x = x_aux # atualiza o vetor x da solução mais aproximada
-    print(x, iteracao, res)
-    return (x, iteracao)
-  else:
-    print("Não converge.")
+    n = len(A) # tamanho da matriz
+    x = vetor_de_um(n) # vetor solução, por enquanto definido como um vetor de um
+    x_aux = vetor_de_um(n) # vetor auxiliar, para alocar as respostas das operações
+    iteracao = 0 # contador de iterações
+    res = 1 # resíduo inicial
+    if condicao_convergencia:
+        while (res > tolerancia):
+            for i in range(n): # percorre as linhas da matriz
+                soma = 0
+                for j in range(n): # percorre as colunas da matriz
+                   if (i != j): #verifica se não é a diagonal principal
+                        soma += A[i][j]*x_aux[j] # usa sempre o vetor com os valores mais atualizados para a soma
+                x_aux[i] = (b[i] - soma) / A[i][i]
+            iteracao += 1
+            res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração
+            x = x_aux # atualiza o vetor x da solução mais aproximada
+        print(x, iteracao, res)
+        return (x, iteracao)
+    else:
+        print("Não converge.")
 
-main(3)
+
+if __name__ == '__main__':
+    main(3)
