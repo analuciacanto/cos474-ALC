@@ -4,7 +4,7 @@ from utils import *
 def getMatrizA():
     A = []
 
-    with open("mat_A.dat") as file:
+    with open("task01/src/mat_A.dat") as file:
         for line in file.readlines():
             data = line.split()
             A.append(data)
@@ -13,13 +13,15 @@ def getMatrizA():
 def getMatrizB():
     B = []
 
-    with open("vet_B.dat") as file:
+    with open("task01/src/vet_B.dat") as file:
         for line in file:
             B.append(line.rstrip('\n'));
     return B
 
 
-def main(ICOD): 
+def main(): 
+
+    ICOD = input('Entre com o ICOD do método desejado: ')
 
     Amatrix = getMatrizA()
     Bmatrix = getMatrizB()
@@ -31,17 +33,14 @@ def main(ICOD):
         A.append(list(np.float_(Amatrix[i])))
   
     B = list(np.float_(Bmatrix))    
-
-    A = [[3, -1, -1], [-1, +3, -1 ], [-1, -1, +3]]
-    B = [1, 2, 1]
-
-    if (ICOD == 1):
+ 
+    if (ICOD == '1'):
         decomposicaoLU(A, B, len(A))
-    elif (ICOD == 2):
+    elif (ICOD == '2'):
         cholesky(A, B, len(A))
-    elif (ICOD == 3):
+    elif (ICOD == '3'):
         jacobi(A, B, 10**-3)
-    elif (ICOD == 4):
+    elif (ICOD == '4'):
         gauss_seidel(A, B, 10**-3)      
     else:
         print("Insira um código válido")
@@ -115,7 +114,7 @@ def decomposicaoLU(A, B, N):
 
         #Calculando Ux = B
         x = substituicoes_retroativas(A, y, N)
-        print(x) 
+        print(arredondar(x,2)) 
         return x
    
     else: 
@@ -153,7 +152,7 @@ def cholesky(A, B, N):
 
     #Calculando Ux = B
     x = substituicoes_retroativas(A, y, N)
-    print(x) 
+    print(arredondar(x, 2)) 
     return (x, True) # retorna a matriz L triangular inferior e True indicando que a operação foi realizada
 
 
@@ -175,7 +174,7 @@ def jacobi(A, b, tolerancia):
             res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração
             print(res)
             x = np.copy(x_aux) # atualiza o vetor x da solução mais aproximada
-        print(x, iteracao)
+        print(arredondar(x,2), iteracao)
         return x, iteracao
     else:
         print("Não converge.")
@@ -197,13 +196,12 @@ def gauss_seidel(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de
                 x_aux[i] = (b[i] - soma) / A[i][i]
             iteracao += 1
             res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração
-            print(res)
             x = np.copy(x_aux) # atualiza o vetor x da solução mais aproximada
-        print(x, iteracao, res)
-        return (x, iteracao)
+        print(arredondar(x,2), iteracao, res)
+        return (arredondar(x,2), iteracao)
     else:
-        print("Não converge.")
+        print("A matriz não converge.")
 
 
 if __name__ == '__main__':
-    main(4)
+    main()

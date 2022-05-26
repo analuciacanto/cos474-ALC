@@ -70,3 +70,21 @@ def condicao_convergencia(A): # para convergir, a matriz A deve ser diagonal dom
             if ((a < somai) or (a < somaj)): # o valor da diagonal principal precisa ser maior ou igual que a soma das linhas e maior ou igual que a soma das colunas 
               converge = False
     return converge
+
+
+def arredondar(A, x):
+    n = np.shape(A)
+    aux = len(n)
+
+    n = np.shape(A)[0]
+
+    if aux == 1:
+        for i in np.arange(n):
+            A[i] = round(A[i], x)
+    else:
+        m = np.shape(A)[1]
+        for i in np.arange(n):
+            for j in np.arange(m):
+                A[i, j] = round(A[i, j], x)
+
+    return A
