@@ -37,9 +37,6 @@ def main():
 
     B = list(np.float_(Bmatrix))
 
-    A = [[1.0, 0.2, 0.0], [0.2, 1.0, 0.5], [0.0, 0.5, 1.0]]
-    B = [1.0, 1.0, 1.0]
-
     if (ICOD == '1'):
         metodo_potencia(A, B, lamb=1, tolerancia=10**-3)
     
