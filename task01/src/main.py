@@ -22,6 +22,7 @@ def getMatrizB():
 def main(): 
 
     ICOD = input('Entre com o ICOD do método desejado: ')
+    DET = input("Digite 1 para calcular determinante e 0 para não: ")
 
     Amatrix = getMatrizA()
     Bmatrix = getMatrizB()
@@ -35,13 +36,13 @@ def main():
     B = list(np.float_(Bmatrix))    
  
     if (ICOD == '1'):
-        decomposicaoLU(A, B, len(A))
+        decomposicaoLU(A, B, len(A), DET)        
     elif (ICOD == '2'):
-        cholesky(A, B, len(A))
+        cholesky(A, B, len(A), DET)
     elif (ICOD == '3'):
-        jacobi(A, B, 10**-3)
+        jacobi(A, B, 10**-3, DET)
     elif (ICOD == '4'):
-        gauss_seidel(A, B, 10**-3)      
+        gauss_seidel(A, B, 10**-3, DET)      
     else:
         print("Insira um código válido")
 
@@ -89,7 +90,7 @@ def substituicoes_retroativas(A, Y, N):
 
     return x
 
-def decomposicaoLU(A, B, N):
+def decomposicaoLU(A, B, N, DET):
     quadrada = matrizQuadrada(A)
 
     if quadrada:
@@ -115,13 +116,15 @@ def decomposicaoLU(A, B, N):
         #Calculando Ux = B
         x = substituicoes_retroativas(A, y, N)
         print(arredondar(x,2)) 
+        if (DET == '1'):
+            print(np.linalg.det(A))
         return x
    
     else: 
         print("Insira uma matriz quadrada")   
 
 
-def cholesky(A, B, N):
+def cholesky(A, B, N, DET):
 
     n = len(A)
     L = np.zeros((n, n))
@@ -153,10 +156,12 @@ def cholesky(A, B, N):
     #Calculando Ux = B
     x = substituicoes_retroativas(A, y, N)
     print(arredondar(x, 2)) 
+    if (DET == '1'):
+        print(np.linalg.det(A))
     return (x, True) # retorna a matriz L triangular inferior e True indicando que a operação foi realizada
 
 
-def jacobi(A, b, tolerancia):
+def jacobi(A, b, tolerancia, DET):
     n = np.shape(A)[0] # tamanho da matriz
     x = len(A) * [1.0] # vetor solução, por enquanto definido como um vetor de um
     x_aux = len(A) * [1.0] # vetor auxiliar, para alocar as respostas das operações
@@ -175,12 +180,14 @@ def jacobi(A, b, tolerancia):
             print(res)
             x = np.copy(x_aux) # atualiza o vetor x da solução mais aproximada
         print(arredondar(x,2), iteracao)
+        if (DET == '1'):
+            print(np.linalg.det(A))
         return x, iteracao
     else:
         print("Não converge.")
 
 
-def gauss_seidel(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de aproximação, por exemplo 10**-3
+def gauss_seidel(A, b, tolerancia, DET): # matriz A; vetor resultado b; tolerancia de aproximação, por exemplo 10**-3
     n = len(A) # tamanho da matriz
     x = len(A) * [1.0] # vetor solução, por enquanto definido como um vetor de um
     x_aux = len(A) * [1.0] # vetor auxiliar, para alocar as respostas das operações
@@ -198,7 +205,10 @@ def gauss_seidel(A, b, tolerancia): # matriz A; vetor resultado b; tolerancia de
             res = residuo_vetor(A, x, x_aux) # calcula o residuo a cada iteração
             x = np.copy(x_aux) # atualiza o vetor x da solução mais aproximada
         print(arredondar(x,2), iteracao, res)
+        if (DET == '1'):
+            print(np.linalg.det(A))
         return (arredondar(x,2), iteracao)
+           
     else:
         print("A matriz não converge.")
 
