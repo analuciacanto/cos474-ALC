@@ -26,6 +26,8 @@ def getMatrizB():
 def main():
 
     ICOD = input('Entre com o ICOD do método desejado: ')
+    DET = input('Digite 1 para calcular determinante e 0 para não calcular ')
+
     Amatrix = getMatrizA()
     Bmatrix = getMatrizB()
 
@@ -38,16 +40,16 @@ def main():
     B = list(np.float_(Bmatrix))
 
     if (ICOD == '1'):
-        metodo_potencia(A, B, lamb=1, tolerancia=10**-3)
+        metodo_potencia(A, B, 1, 10**-3, DET)
     
     elif(ICOD == '2'):
-        jacobi(A, 10**-3)
+        jacobi(A, 10**-3, DET)
 
     else:
         print("Insira um código válido")
 
 
-def metodo_potencia(A, x, lamb=1, tolerancia=10**-3):
+def metodo_potencia(A, x, lamb, tolerancia, DET):
     n = len(A)
     res = 1
     iteracao = 0
@@ -65,11 +67,13 @@ def metodo_potencia(A, x, lamb=1, tolerancia=10**-3):
 
         iteracao += 1
     print("lambda , x , nº iteração")
+    if (DET == '1'):
+        print(np.linalg.det(A))
     print(round(lamb, 2), arredondar(x,2), iteracao)
     return lamb, x, iteracao
 
 
-def jacobi(A, tolerancia):
+def jacobi(A, tolerancia, DET):
     Aux = np.copy(A)
     n = np.shape(A)[0]
     X = np.eye(n)
@@ -97,7 +101,8 @@ def jacobi(A, tolerancia):
 
         print('\n Iteracao nº ', iteracao, '\nangulo phi: ', phi,
               '\nmatriz autovalores A=\n', arredondar(Aux, 2), '\nmatriz Autovetores X=\n', arredondar(X, 2))
-
+        if (DET == '1'):
+            print(np.linalg.det(A))
     return (Aux, X, iteracao, ok)
 
     
