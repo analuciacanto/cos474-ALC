@@ -1,6 +1,5 @@
 import sympy as sym
 import numpy as np
-import math as math
 
 
 def main():
@@ -11,11 +10,12 @@ def main():
     c2 = 2
     c3 = -3
     c4 = 3
-    a = 0
-    b = 10
+    a = -1
+    b = 1
     epsilon = 5*10**-4
     maxIter = 20
     x0 = 10
+    pontosIntegracao = 2
 
     if (ICOD == '1'):
         METODO = input(
@@ -149,6 +149,22 @@ def metodoNewton(f, fderivada, c1, c2, c3, c4, x0, epsilon, maxIter):
         print("O Método de Newton retornou um erro.")
     if raiz is not None:
         print("Raiz encontrada: %s" % round(raiz, 3))
+
+
+def algoritmoQuadraturaGaussiana(f, c1, c2, c3, c4, a, b, pontosIntegracao):
+    t0 = - 3**(0.5)
+    t1 = - 3**(0.5)
+
+    x0 = ((b-a)/2)*t0 + (a+b)/2
+    x1 = ((b-a)/2)*t1 + (a+b)/2
+
+    A0 = 1
+    A1 = 1
+
+    I = ((b-a)/2) * A0*f(x0, c1, c2, c3, c4) + A1*f(x1, c1, c2, c3, c4)
+
+    print(I)
+    return I
 
 
 main()
