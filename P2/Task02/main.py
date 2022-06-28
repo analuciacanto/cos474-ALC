@@ -16,8 +16,11 @@ def main():
     b = 1
     epsilon = 5*10**-4
     maxIter = 20
-    x0 = 10
+    x0 = 1
     numeroPontos = 5
+    deltax1 = 0.5
+    deltax2 = 0.25
+    p = 1
 
 
     if (ICOD == '1'):
@@ -35,13 +38,27 @@ def main():
              algoritmoIntegracaoPolinomial(f, c1, c2, c3, c4, a, b, numeroPontos)
         elif (METODO == "2"):
             algoritmoQuadraturaGaussiana(f, c1, c2, c3, c4, a, b, numeroPontos)
+
+    elif (ICOD == "3"):
+        METODO = input(
+            'Digite 1 para o a derivada passo a frente, 2 para derivada passo para trás e 3 para derivada central: ')
+        if (METODO == "1"):
+             derivadaPassoParaFrente(f, c1, c2, c3, c4, deltax1, x0)
+        elif (METODO == "2"):
+            derivadaPassoParaTras(f, c1, c2, c3, c4, deltax1, x0)
+        elif (METODO == "3"):
+            derivadaCentral(f, c1, c2, c3, c4, deltax1, x0)
+
+    elif (ICOD == "4"):
+        extrapolacaoRichard(f, c1, c2, c3, c4, deltax1, deltax2, x0, p)
+       
     else:
         print("Insira um código válido")
 
 
 def f(x, c1, c2, c3, c4):
-    return c1**(c2*x) + c3*x**c4
-    #return (math.e)**(-x**2)
+    #return c1**(c2*x) + c3*x**c4
+    return math.sin(x)
     
 
 def fderivada(x0, c1, c2, c3, c4):
@@ -191,6 +208,34 @@ def algoritmoIntegracaoPolinomial(f, c1, c2, c3, c4, a, b, numeroPontos):
            
     print(I)
     return I
+
+def derivadaPassoParaFrente(f, c1, c2, c3, c4, deltax, xa):
+    derivada = (f(xa + deltax,  c1, c2, c3, c4) - f(xa,  c1, c2, c3, c4)) / deltax
+    print("Derivada passo para frente: "  + str(derivada))
+    return derivada
+
+    
+def derivadaPassoParaTras(f, c1, c2, c3, c4, deltax, xa):
+    derivada = (f(xa,  c1, c2, c3, c4) - f(xa - deltax,  c1, c2, c3, c4)) / deltax
+    print(derivada)
+    return derivada
+
+def derivadaCentral(f, c1, c2, c3, c4, deltax, xa):
+    derivada = (f(xa + deltax,  c1, c2, c3, c4) - f(xa - deltax,  c1, c2, c3, c4)) / 2*deltax
+    print(derivada)
+    return derivada
+
+
+def extrapolacaoRichard(f, c1, c2, c3, c4, deltax1, deltax2, xa, p):
+    q = deltax1/deltax2
+
+    d1 =  derivadaPassoParaFrente(f, c1, c2, c3, c4, deltax1, xa)
+    d2 = derivadaPassoParaFrente(f, c1, c2, c3, c4, deltax2, xa)
+
+    derivada = d1 + (d1 - d2)/(q**(-p) - 1)
+
+    print("Extrapolação de Richard: " + str(derivada))
+    return derivada
 
 
 main()
