@@ -1,6 +1,8 @@
-import sympy as sym
-import numpy as np
 
+from valoresIntegracaoPolinomial import *
+from valoresQuadraturaGaussiana import *
+import math
+import sympy as sym
 
 def main():
 
@@ -10,12 +12,13 @@ def main():
     c2 = 2
     c3 = -3
     c4 = 3
-    a = -1
+    a = 0
     b = 1
     epsilon = 5*10**-4
     maxIter = 20
     x0 = 10
-    pontosIntegracao = 2
+    numeroPontos = 5
+
 
     if (ICOD == '1'):
         METODO = input(
@@ -25,19 +28,25 @@ def main():
         elif(METODO == "2"):
             metodoNewton(f, fderivada, c1, c2, c3, c4, x0, epsilon, maxIter)
 
+    elif (ICOD == "2"):
+        METODO = input(
+            'Digite 1 para o método da Integração Polinomial e 2 para o método da Quadratura Gaussiana: ')
+        if (METODO == "1"):
+             algoritmoIntegracaoPolinomial(f, c1, c2, c3, c4, a, b, numeroPontos)
+        elif (METODO == "2"):
+            algoritmoQuadraturaGaussiana(f, c1, c2, c3, c4, a, b, numeroPontos)
     else:
         print("Insira um código válido")
 
 
 def f(x, c1, c2, c3, c4):
     return c1**(c2*x) + c3*x**c4
-    # return x**2 - 4*np.cos(x)
-
+    #return (math.e)**(-x**2)
+    
 
 def fderivada(x0, c1, c2, c3, c4):
     x = sym.Symbol('x')
     df = sym.diff(c1**(c2*x) + c3*x**c4)
-    # return 2*x0 + 4*np.sin(x0)
     return df.subs(x, x0)
 
 
@@ -151,18 +160,35 @@ def metodoNewton(f, fderivada, c1, c2, c3, c4, x0, epsilon, maxIter):
         print("Raiz encontrada: %s" % round(raiz, 3))
 
 
-def algoritmoQuadraturaGaussiana(f, c1, c2, c3, c4, a, b, pontosIntegracao):
-    t0 = - 3**(0.5)
-    t1 = - 3**(0.5)
+def algoritmoQuadraturaGaussiana(f, c1, c2, c3, c4, a, b, numeroPontos): 
+    
+    I = 0
 
-    x0 = ((b-a)/2)*t0 + (a+b)/2
-    x1 = ((b-a)/2)*t1 + (a+b)/2
+    for i in range(numeroPontos):
+        A = wiValues()        
+        X = xiValues()   
 
-    A0 = 1
-    A1 = 1
+        x = ((b - a)/2)*X[numeroPontos][i+1] + (a+b)/2 
+                      
+        I += A[numeroPontos][i+1]*f(x, c1, c2, c3, c4)
+            
+        
+    print(I)
+    return I
 
-    I = ((b-a)/2) * A0*f(x0, c1, c2, c3, c4) + A1*f(x1, c1, c2, c3, c4)
 
+
+def algoritmoIntegracaoPolinomial(f, c1, c2, c3, c4, a, b, numeroPontos): 
+    
+    I = 0
+    L = b-a
+
+    for i in range(numeroPontos):
+        W = wiValuesIP(L)        
+        X = xiValuesIP(a,b, (L)/(numeroPontos-1))   
+       
+        I +=  W[numeroPontos][i+1] * f(X[numeroPontos][i+1], c1, c2, c3, c4)            
+           
     print(I)
     return I
 
