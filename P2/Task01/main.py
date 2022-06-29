@@ -8,10 +8,13 @@ def main():
     th1 = 0.75
     th2 = 6.5 
     TOL = 10**(-4)
-    N = 10
+    N = 20
 
-    #algoritmoNewton(c2,c3,c4, th1, th2, TOL, N)
-    algoritmoBroyden()
+    ICOD = input('Entre com o ICOD do método desejado: ')
+    if (ICOD == '1'):
+        algoritmoNewton(c2,c3,c4, th1, th2, TOL, N)
+    elif(ICOD == '2'):   
+        algoritmoBroyden(c2,c3,c4, th1, th2, TOL, N)
 
 
 def y(c2,c3,c4, th1, th2):
@@ -56,7 +59,7 @@ def algoritmoNewton(c2,c3,c4, th1, th2, TOL, N):
         delta = - np.linalg.inv(jx).dot(fx)
         c = [c[0] + delta[0], c[1] + delta[1], c[2] + delta[2]]
 
-        print({"Iteração":  k , "c1,c2, c3": c })
+        print({"Iteração":  k , "c2,c3,c4": c })
      
         if (np.linalg.norm(delta) / np.linalg.norm(c) < TOL):
             print("Tolerância máxima atingida")
@@ -65,60 +68,32 @@ def algoritmoNewton(c2,c3,c4, th1, th2, TOL, N):
 
         k += 1
 
+       
 
-def f(x1,x2):
-    return [x1 + 2*x2 - 2, x1**2 + 4*x2**2 -4]
-
-def j(x1,x2):
-    return [[1,2], [2*x1, 8*x2]]
-
-        
-
-def algoritmoBroyden():
-    x = [2,3]
+def algoritmoBroyden(c2,c3,c4, th1, th2, TOL, N):
+    c = [c2,c3,c4] 
+    jx = np.array(jacobianaY(c[0],c[1],c[2], th1, th2))
+    b0 = jx
     k = 1
 
+    while(k <= N):
 
-    while(k < 2):
-        jx = np.array(j(x[0], x[1]))
+        fx = np.array(y(c[0],c[1],c[2], th1, th2))
 
-        fx = np.array(f(x[0], x[1]))
+        delta = np.array(-np.linalg.inv(b0).dot(fx))
 
-        delta = np.array(-np.linalg.inv(jx).dot(fx))
+        c = [c[0] + delta[0], c[1] + delta[1], c[2] + delta[2]]
 
-        x = [x[0] + delta[0], x[1] + delta[1]]
-        print(x)
+        print({"Iteração":  k , "c2,c3,c4": c })
 
-        Y = np.array([f(x[0], x[1])[0] - fx[0], f(x[0], x[1])[1] - fx[1]])
+        Y = np.subtract(np.array(y(c[0],c[1],c[2], th1, th2)), fx)
 
+        if (np.linalg.norm(delta) / np.linalg.norm(c) < TOL):
+            print("Tolerância máxima atingida")
+            print(c)
+            break
 
-        print("Y")
-        print(Y)
-
-        print("deltaX Transposta * deltax")
-        produtoDelta = np.transpose(delta) @ delta
-        print(produtoDelta)
-
-        print("jx deltax")
-
-        produtojxdeltax = jx @ delta 
-        print(produtojxdeltax)
-
-        print("y - jx deltax")
-        yjxdeltax = Y - produtojxdeltax
-        print(yjxdeltax)
-
-        numerador = yjxdeltax @ np.transpose(delta)
-        print(numerador)
-    
-
-        print(np.linalg.norm(delta) / np.linalg.norm(x))
-
-      
-        k = k +1
-
-
-
-
-
+        b0 = b0 + ( np.outer(Y - np.dot(b0, delta), np.transpose(delta),)) / np.dot(np.transpose(delta),delta)
+        k += 1       
+   
 main()
