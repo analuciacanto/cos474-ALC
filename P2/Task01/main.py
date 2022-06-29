@@ -10,7 +10,8 @@ def main():
     TOL = 10**(-4)
     N = 10
 
-    algoritmoNewton(c2,c3,c4, th1, th2, TOL, N)
+    #algoritmoNewton(c2,c3,c4, th1, th2, TOL, N)
+    algoritmoBroyden()
 
 
 def y(c2,c3,c4, th1, th2):
@@ -63,6 +64,59 @@ def algoritmoNewton(c2,c3,c4, th1, th2, TOL, N):
             break
 
         k += 1
+
+
+def f(x1,x2):
+    return [x1 + 2*x2 - 2, x1**2 + 4*x2**2 -4]
+
+def j(x1,x2):
+    return [[1,2], [2*x1, 8*x2]]
+
+        
+
+def algoritmoBroyden():
+    x = [2,3]
+    k = 1
+
+
+    while(k < 2):
+        jx = np.array(j(x[0], x[1]))
+
+        fx = np.array(f(x[0], x[1]))
+
+        delta = np.array(-np.linalg.inv(jx).dot(fx))
+
+        x = [x[0] + delta[0], x[1] + delta[1]]
+        print(x)
+
+        Y = np.array([f(x[0], x[1])[0] - fx[0], f(x[0], x[1])[1] - fx[1]])
+
+
+        print("Y")
+        print(Y)
+
+        print("deltaX Transposta * deltax")
+        produtoDelta = np.transpose(delta) @ delta
+        print(produtoDelta)
+
+        print("jx deltax")
+
+        produtojxdeltax = jx @ delta 
+        print(produtojxdeltax)
+
+        print("y - jx deltax")
+        yjxdeltax = Y - produtojxdeltax
+        print(yjxdeltax)
+
+        numerador = yjxdeltax @ np.transpose(delta)
+        print(numerador)
+    
+
+        print(np.linalg.norm(delta) / np.linalg.norm(x))
+
+      
+        k = k +1
+
 
 
 
